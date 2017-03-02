@@ -59,17 +59,17 @@
 //
 //
 //	int i = 0;
-////	while (i < 4)
-////	{
-////		data_adr[i] = 'g';
-////		i++;
-////	}
-////	data_adr[0] = 11;
-////	data_adr[1] = 11;
-////	data_adr[2] = 11;
-////	data_adr[3] = 'B';
-////	data_adr[4] = '0';
-////	data_adr[5] = 'B';
+//	while (i < 4)
+//	{
+//		data_adr[i] = 'g';
+//		i++;
+//	}
+//	data_adr[0] = 11;
+//	data_adr[1] = 11;
+//	data_adr[2] = 11;
+//	data_adr[3] = 'B';
+//	data_adr[4] = '0';
+//	data_adr[5] = 'B';
 //
 //
 //
@@ -136,21 +136,38 @@ char		**ft_count_pixels_in_line(char *line, t_window *window)
 	return (pixels_from_line);
 }
 
+static int	ft_convert_hex_digit_to_dig(int dig)
+{
+	char	*tmp;
+
+	if (ft_isdigit(dig))
+		dig -= '0';
+	else if ((tmp = ft_strchr("abcdef", dig)))
+	{
+		dig = *tmp - 'a' + 10;;
+	}
+	else if ((tmp = ft_strchr("ABCDEF", dig)))
+	{
+		dig = *tmp - 'A' + 10;
+	}
+	return (dig);
+}
+
 static int	ft_hex_to_dig(char color[])
 {
-	int		dig1;
-	int 	dig2;
-	char 	*tmp;
+	int		digit1_hex;
+	int 	digit2_hex;
+	int 	digit1_dec;
+	int 	digit2_dec;
 
-	dig1 = color[0];
-	dig2 = color[1];
-	if (ft_isalnum(dig1))
-		dig1 -= '0';
-	else if ((tmp = ft_strchr("abcdef", dig1)))
-		dig1 = *tmp - 'a' + 10;
 
-	printf(">>%c\n", dig1);
-	return ((dig1 * 16) + dig2);
+	digit1_hex = color[0];
+	digit2_hex = color[1];
+
+	digit1_dec = ft_convert_hex_digit_to_dig(digit1_hex);
+	digit2_dec = ft_convert_hex_digit_to_dig(digit2_hex);
+	//printf("%s = [%d, %d] ", color, digit1_dec, digit2_dec);
+	return ((digit1_dec * 16) + digit2_dec);
 }
 
 static void	ft_determ_pixel_color(t_pixel_info *pixel_info, char *color)
@@ -171,8 +188,18 @@ static void	ft_determ_pixel_color(t_pixel_info *pixel_info, char *color)
 		color--;
 		color_hex[0] = *color;
 		pixel_info->default_color_b = ft_hex_to_dig(color);
+		color--;
+		color_hex[1] = *color;
+		color--;
+		color_hex[0] = *color;
+		pixel_info->default_color_g = ft_hex_to_dig(color);
+		color--;
+		color_hex[1] = *color;
+		color--;
+		color_hex[0] = *color;
+		pixel_info->default_color_r = ft_hex_to_dig(color);
 	}
-	printf("%s\n", color);
+//	printf("%-3d, %-3d, %-3d\n", pixel_info->default_color_r, pixel_info->default_color_g, pixel_info->default_color_b);
 }
 
 void	ft_determ_pixel_info(int y, t_pixel_info **pixels_arr, t_window *window, char **pixels_from_line)
@@ -229,7 +256,7 @@ int		main(int argc, char **argv)
 	pixels_from_line = ft_count_pixels_in_line(line, window);
 	pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*) * window->pixels_hight * window->pixels_width);
 	ft_fill_pixel_arr(pixels_arr, window, pixels_from_line);
-//	printf("|%d|\n", pixels_arr[9]->default_y);
+	//printf("|%d|\n", pixels_arr[9]->default_y);
 	close(fd);
 	return (0);
 }

@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include "get_next_line.h"
 
-char		*ft_itoa_base(int *nbr, int base);
+char	*ft_strnew_bchar(size_t size, char c);
 char	*ft_strnew_bchar(size_t size, char c);
 
 typedef struct	s_window
