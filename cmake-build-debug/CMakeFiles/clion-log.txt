@@ -1,0 +1,7 @@
+/Applications/CLion.app/Contents/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /nfs/2016/v/vrudenko/projects/C/FdF
+-- Configuring done
+CMake Error: CMake can not determine linker language for target: FdF
+CMake Error: Cannot determine link language for target "FdF".
+-- Generating done
+-- Build files have been written to: /nfs/2016/v/vrudenko/projects/C/FdF/cmake-build-debug
+Unable to determine product file path for target FdF (Debug). Running and debugging will be unavailable.
