@@ -19,7 +19,6 @@ void	ft_help(t_line *line, t_window *wind, t_data_im_addr *data_im_addr, int col
 	while (line->x1 != line->x2 || line->y1 != line->y2)
 	{
 		ft_put_pixel_to_image(data_im_addr, line->x1, line->y1, color);
-		//mlx_pixel_put(wind->mlx, wind->win, line->x1, line->y1, color);
 		line->error2 = line->error * 2;
 		if (line->error2 > -(line->deltay))
 		{
@@ -56,7 +55,6 @@ void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind, t_image *img, t_d
 		color[1] = a->current_color_g;
 		color[2] = a->current_color_b;
 	}
-
 	line->deltax = abs(line->x2 - line->x1);
 	line->deltay = abs(line->y2 - line->y1);
 	if (line->x1 < line->x2)
@@ -67,9 +65,6 @@ void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind, t_image *img, t_d
 		line->signy = 1;
 	else
 		line->signy = -1;
-
 	line->error = line->deltax - line->deltay;
-	ft_put_pixel_to_image(data_im_addr, line->x2, line->y2, color);
-
 	ft_help(line, wind, data_im_addr, color);
 }

@@ -36,7 +36,7 @@ static void	ft_zoom(int keycode, t_allstruct *allstruct)
 	}
 	mlx_destroy_image(allstruct->window->mlx, allstruct->image->img);
 	mlx_clear_window(allstruct->window->mlx, allstruct->window->win);
-	allstruct->image->img = mlx_new_image(allstruct->window->mlx, allstruct->window->width, allstruct->window->high);
+	allstruct->image->img = mlx_new_image(allstruct->window->mlx, allstruct->window->width*2, allstruct->window->high*2);
 	ft_draw_image(allstruct->window, allstruct->image, allstruct->pixels_arr);
 	mlx_put_image_to_window(allstruct->window->mlx, allstruct->window->win, allstruct->image->img,
 	allstruct->image->current_location_x, allstruct->image->current_location_y);

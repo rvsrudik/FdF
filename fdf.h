@@ -10,9 +10,9 @@
 #define ANGLE_Z 1
 
 
-#define DEFAULT_LOCATION_X 30
-#define DEFAULT_LOCATION_Y 30
-#define ZOOM 20
+#define DEFAULT_LOCATION_X 0
+#define DEFAULT_LOCATION_Y 0
+#define ZOOM 1
 
 
 #include <stdio.h>
@@ -24,6 +24,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include "get_next_line.h"
+#include <math.h>
 
 char	*ft_strnew_bchar(size_t size, char c);
 

@@ -43,6 +43,31 @@ static int		ft_count_pixel_width(char **pixels_line_array)
 
 
 
+void ft_image_proection(t_pixel_info *pixel_info)
+{
+	float rt = 0.01745329252;
+	float r;
+
+	//pixel_info->current_x = pixel_info->default_x;
+	//pixel_info->current_y = pixel_info->default_y;
+	//pixel_info->current_z = pixel_info->default_z;
+
+	r = rt * 60;
+
+	pixel_info->current_y = pixel_info->current_y * cos(r) + pixel_info->current_z * sin(r);
+	pixel_info->current_z = pixel_info->current_z * cos(r) - pixel_info->current_y * sin(r);
+
+	r = rt * 25;
+	pixel_info->current_x = pixel_info->current_x * cos(r) - pixel_info->current_z * sin(r);
+	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_x * sin(r);
+
+	r = rt * 0;
+	pixel_info->current_x = pixel_info->current_x * cos(r) + pixel_info->current_y * sin(r);
+	pixel_info->current_y = pixel_info->current_y * cos(r) - pixel_info->current_x * sin(r);
+
+}
+
+
 void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[])
 {
 	int i;
@@ -57,24 +82,33 @@ void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[
 void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 {
 	int i = 0;
-	int color[3];
+	int colums;
+	int row;
 	t_data_im_addr *data_im_addr;
+	int 	color[3];
 
 	data_im_addr = (t_data_im_addr*)malloc(sizeof(*data_im_addr));
 	data_im_addr->data_im_adr = mlx_get_data_addr(image->img, &data_im_addr->bits_per_pixel, &data_im_addr->size_line, &data_im_addr->endian);
+	colums = 0;
+	row = 0;
 
-	while (i < window->pixels_width * window->pixels_hight)
+	while (row < window->pixels_hight - 1)
 	{
-		color[0] = pixels_arr[i]->default_color_r;
-		color[1] = pixels_arr[i]->default_color_g;
-		color[2] = pixels_arr[i]->default_color_b;
-		pixels_arr[i]->draw_x = pixels_arr[i]->current_x;
-		pixels_arr[i]->draw_y = pixels_arr[i]->current_y;
-		ft_put_pixel_to_image(data_im_addr, pixels_arr[i]->draw_x, pixels_arr[i]->draw_y, color);
-		i++;
+		while (colums < window->pixels_width - 1)
+		{
+			ft_line(pixels_arr[colums + (window->pixels_width * row)], pixels_arr[colums + (window->pixels_width * row) + 1], window, image, data_im_addr);
+			ft_line(pixels_arr[colums + (window->pixels_width * row)], pixels_arr[colums + (window->pixels_width * row) + window->pixels_width], window, image, data_im_addr);
+			colums++;
+		}
+		ft_line(pixels_arr[colums + (window->pixels_width * row)], pixels_arr[colums + (window->pixels_width * row) + window->pixels_width], window, image, data_im_addr);
+		colums = 0;
+		row++;
 	}
-	i = 0;
-	ft_line(pixels_arr[0], pixels_arr[1], window, image, data_im_addr);
+	while (colums < window->pixels_width - 1)
+	{
+		ft_line(pixels_arr[colums + (window->pixels_width * row)], pixels_arr[colums + (window->pixels_width * row) + 1], window, image, data_im_addr);
+		colums++;
+	}
 }
 
 void	ft_set_img_setting(t_image *image)
@@ -92,9 +126,6 @@ void	ft_set_img_setting(t_image *image)
 	image->current_location_x = image->default_location_x;
 	image->current_location_y = image->default_location_y;
 	image->current_zoom = image->default_zoom;
-
-
-
 }
 
 void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window)
@@ -106,6 +137,8 @@ void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *win
 	{
 		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
 		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
+		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom;
+		ft_image_proection(pixels_arr[i]);
 		i++;
 	}
 }
