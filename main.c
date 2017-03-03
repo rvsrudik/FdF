@@ -74,8 +74,7 @@ void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 		i++;
 	}
 	i = 0;
-
-	ft_line(pixels_arr[0], pixels_arr[1], window);
+	ft_line(pixels_arr[0], pixels_arr[1], window, image, data_im_addr);
 }
 
 void	ft_set_img_setting(t_image *image)
@@ -160,12 +159,6 @@ int		main(int argc, char **argv)
 	ft_read_and_fill_pixel_arr(pixels_arr, window, pixels_line_array, fd);
 	ft_fdf(window, pixels_arr, argv[1]);
 
-	//int	i = 0;
-//	while (i < window->pixels_hight * window->pixels_width)
-//	{
-//		printf("%d, %d, %d\n", pixels_arr[i]->current_x, pixels_arr[i]->current_y, pixels_arr[i]->current_z);
-//		i++;
-//	}
 	close(fd);
 	return (0);
 }

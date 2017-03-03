@@ -14,11 +14,12 @@
 #include <math.h>
 #include <stdio.h>
 
-void	ft_help(t_line *line, t_window *wind)
+void	ft_help(t_line *line, t_window *wind, t_data_im_addr *data_im_addr, int color[])
 {
 	while (line->x1 != line->x2 || line->y1 != line->y2)
 	{
-		mlx_pixel_put(wind->mlx, wind->win, line->x1, line->y1, 111111);
+		ft_put_pixel_to_image(data_im_addr, line->x1, line->y1, color);
+		//mlx_pixel_put(wind->mlx, wind->win, line->x1, line->y1, color);
 		line->error2 = line->error * 2;
 		if (line->error2 > -(line->deltay))
 		{
@@ -33,26 +34,27 @@ void	ft_help(t_line *line, t_window *wind)
 	}
 }
 
-void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind)
+void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind, t_image *img, t_data_im_addr *data_im_addr)
 {
 	t_line	*line;
+	int		color[3];
 
 	line = malloc(sizeof(t_line));
-	line->x1 = a->default_x;
-	line->y1 = a->default_y;
-	line->x2 = b->default_x;
-	line->y2 = b->default_y;
+	line->x1 = a->current_x;
+	line->y1 = a->current_y;
+	line->x2 = b->current_x;
+	line->y2 = b->current_y;
 	if (b->default_z > a->default_z)
 	{
-		line->color_r = b->current_color_r;
-		line->color_g = b->current_color_g;
-		line->color_b = b->current_color_b;
+		color[0] = b->current_color_r;
+		color[1] = b->current_color_g;
+		color[2] = b->current_color_b;
 	}
 	else
 	{
-		line->color_r = a->current_color_r;
-		line->color_g = a->current_color_g;
-		line->color_b = a->current_color_b;
+		color[0] = a->current_color_r;
+		color[1] = a->current_color_g;
+		color[2] = a->current_color_b;
 	}
 
 	line->deltax = abs(line->x2 - line->x1);
@@ -65,8 +67,9 @@ void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind)
 		line->signy = 1;
 	else
 		line->signy = -1;
+
 	line->error = line->deltax - line->deltay;
-	//ft_
-	//mlx_pixel_put(wind->mlx, wind->win, line->x2, line->y2, 111111);
-	//ft_help(line, wind);
+	ft_put_pixel_to_image(data_im_addr, line->x2, line->y2, color);
+
+	ft_help(line, wind, data_im_addr, color);
 }

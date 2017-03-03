@@ -12,7 +12,7 @@
 
 #define DEFAULT_LOCATION_X 30
 #define DEFAULT_LOCATION_Y 30
-#define ZOOM 1
+#define ZOOM 20
 
 
 #include <stdio.h>
@@ -116,9 +116,16 @@ typedef struct		s_line
 	int				x2;
 }					t_line;
 
-void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind);
+void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind,  t_image *img, t_data_im_addr *data_im_addr);
 void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window);
 void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr);
+
+
+
+void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[]);
+
+
+
 
 int		ft_my_key_func(int keycode, t_allstruct *allstruct);
 
