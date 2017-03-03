@@ -1,78 +1,5 @@
 #include "fdf.h"
 
-//void	ft_determ_windows_params(t_window *window)
-//{
-//	window->hight = 400;
-//	window->width = 500;
-//	window->position_x = 50;
-//	window->position_y = 50;
-//}
-
-//void ft_put_pixel_to_image(int x, int y, char *color, t_window *);
-//
-//
-//int main()
-//{
-//	t_window	*window;
-//
-//	char		*tmp;
-//	int			size = 3;
-//	int			color_val;
-//
-//
-//
-//	int x = 100;
-//	int	y = 100;
-
-//
-//
-//	window = (t_window*)malloc(sizeof(*window));
-//
-//	window->mlx = mlx_init();
-//	ft_determ_windows_params(window);
-//	window->win = mlx_new_window(window->mlx, window->width, window->hight, "mlx 42");
-//	window->img = mlx_new_image(window->mlx, window->width, window->hight);
-//
-//
-//	int		bits_per_pixel = 0;
-//	int		size_line =  0;
-//	int		endian = 0;
-//	char	*data_adr;
-//
-//	data_adr = mlx_get_data_addr(window->img, &bits_per_pixel, &size_line, &endian);
-//
-//	mlx_string_put ( window->mlx, window->win, 10, 10 , 111111, "Exit = Q");
-//
-//	printf("b_per_pix |%d|\n", bits_per_pixel);
-//	printf("size_line |%d|\n", size_line);
-//	printf("endian    |%d|\n", endian);
-//
-//
-//	int i = 0;
-//	while (i < 4)
-//	{
-//		data_adr[i] = 'g';
-//		i++;
-//	}
-//	data_adr[0] = 11;
-//	data_adr[1] = 11;
-//	data_adr[2] = 11;
-//	data_adr[3] = 'B';
-//	data_adr[4] = '0';
-//	data_adr[5] = 'B';
-//
-//
-//
-//			mlx_put_image_to_window(window->mlx, window->win, window->img, window->position_x, window->position_y);
-//
-//
-//	mlx_pixel_put(window->mlx, window->win, 50, 51, 1242520);
-//	ft_key_hook(window);
-//
-//
-//	return 0;
-//}
-
 void ft_printf_pixel_info(t_pixel_info *pixel_info)
 {
 	printf("----------------------------------------------\n");
@@ -113,50 +40,101 @@ static int		ft_count_pixel_width(char **pixels_line_array)
 	return (pixels);
 }
 
-void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, t_pixel_info *pixel_arr)
+
+
+
+void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[])
 {
 	int i;
-	i = ((data_im_adr->size_line * (pixel_arr->current_y * 1)) + (pixel_arr->current_x * 1* 4));
+	i = ((data_im_adr->size_line * (y)) + (x * 4));
 
-	data_im_adr->data_im_adr[i] = pixel_arr->default_color_b;
-	data_im_adr->data_im_adr[i + 1] = pixel_arr->default_color_g;
-	data_im_adr->data_im_adr[i + 2] = pixel_arr->default_color_r;
+	data_im_adr->data_im_adr[i] = color[2];
+	data_im_adr->data_im_adr[i + 1] = color[1];
+	data_im_adr->data_im_adr[i + 2] = color[0];
 }
+
+
 void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 {
 	int i = 0;
+	int color[3];
 	t_data_im_addr *data_im_addr;
 
 	data_im_addr = (t_data_im_addr*)malloc(sizeof(*data_im_addr));
-
 	data_im_addr->data_im_adr = mlx_get_data_addr(image->img, &data_im_addr->bits_per_pixel, &data_im_addr->size_line, &data_im_addr->endian);
 
 	while (i < window->pixels_width * window->pixels_hight)
 	{
-		ft_put_pixel_to_image(data_im_addr, pixels_arr[i]);
+		color[0] = pixels_arr[i]->default_color_r;
+		color[1] = pixels_arr[i]->default_color_g;
+		color[2] = pixels_arr[i]->default_color_b;
+		pixels_arr[i]->draw_x = pixels_arr[i]->current_x;
+		pixels_arr[i]->draw_y = pixels_arr[i]->current_y;
+		ft_put_pixel_to_image(data_im_addr, pixels_arr[i]->draw_x, pixels_arr[i]->draw_y, color);
+		i++;
+	}
+	i = 0;
+
+	ft_line(pixels_arr[0], pixels_arr[1], window);
+}
+
+void	ft_set_img_setting(t_image *image)
+{
+	image->default_angle_x = ANGLE_X;
+	image->default_angle_z = ANGLE_Y;
+	image->default_angle_z = ANGLE_Z;
+	image->default_location_x = DEFAULT_LOCATION_X;
+	image->default_location_y = DEFAULT_LOCATION_Y;
+	image->default_zoom = ZOOM;
+
+	image->current_angle_x = image->default_angle_x;
+	image->current_angle_z = image->default_angle_y;
+	image->current_angle_z = image->default_angle_z;
+	image->current_location_x = image->default_location_x;
+	image->current_location_y = image->default_location_y;
+	image->current_zoom = image->default_zoom;
+
+
+
+}
+
+void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window)
+{
+	int i;
+
+	i = 0;
+	while (i < window->pixels_width * window->pixels_hight)
+	{
+		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
+		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
 		i++;
 	}
 }
 
 void	ft_fdf(t_window *window, t_pixel_info **pixels_arr, char *name)
 {
-	t_image_setting *image_setting;
 	t_image			*image;
+	t_allstruct		*allstruct;
 
-	window->high = 1300;
-	window->width = 2000;
 
+	window->high = WINDOW_HIGH;
+	window->width = WINDOW_WIDTH;
+	allstruct = (t_allstruct*)malloc(sizeof(*allstruct));
 	image = (t_image*)malloc(sizeof(*image));
-
+	allstruct->window = window;
+	allstruct->image = image;
+	allstruct->pixels_arr = pixels_arr;
 	window->mlx = mlx_init();
-	window->win = mlx_new_window(window->mlx, window->width, window->high, "qwe");
+	window->win = mlx_new_window(window->mlx, window->width, window->high, name);
 	image->img = mlx_new_image(window->mlx, window->width, window->high);
-	ft_draw_image(window, image, pixels_arr);
+	ft_set_img_setting(image);
+	ft_use_img_setting(image, pixels_arr, window);
 
-	mlx_put_image_to_window(window->mlx, window->win, image->img, 10, 10);
+	ft_draw_image(window, image, pixels_arr);
+	mlx_put_image_to_window(window->mlx, window->win, image->img, DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y);
+	mlx_hook(window->win, 2, 5, ft_my_key_func, allstruct);
 	mlx_loop(window->mlx);
 }
-
 
 int		main(int argc, char **argv)
 {
@@ -180,16 +158,13 @@ int		main(int argc, char **argv)
 	window->pixels_width = ft_count_pixel_width(pixels_line_array);
 	pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*) * window->pixels_hight * window->pixels_width);
 	ft_read_and_fill_pixel_arr(pixels_arr, window, pixels_line_array, fd);
-
 	ft_fdf(window, pixels_arr, argv[1]);
 
-
-
-	int start_pixel = 0;
-//	while (start_pixel < window->pixels_hight * window->pixels_width)
+	//int	i = 0;
+//	while (i < window->pixels_hight * window->pixels_width)
 //	{
-//		ft_printf_pixel_info(pixels_arr[start_pixel]);
-//		start_pixel++;
+//		printf("%d, %d, %d\n", pixels_arr[i]->current_x, pixels_arr[i]->current_y, pixels_arr[i]->current_z);
+//		i++;
 //	}
 	close(fd);
 	return (0);

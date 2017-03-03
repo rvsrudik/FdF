@@ -3,8 +3,17 @@
 #ifndef FDF_H
 # define FDF_H
 
-#define WINDOW_WIDTH
-#define WINDOW_HIGH
+#define WINDOW_HIGH 1024
+#define WINDOW_WIDTH 1600
+#define ANGLE_X 1
+#define ANGLE_Y 1
+#define ANGLE_Z 1
+
+
+#define DEFAULT_LOCATION_X 30
+#define DEFAULT_LOCATION_Y 30
+#define ZOOM 1
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +25,6 @@
 #include <unistd.h>
 #include "get_next_line.h"
 
-char	*ft_strnew_bchar(size_t size, char c);
 char	*ft_strnew_bchar(size_t size, char c);
 
 typedef struct	s_window
@@ -35,8 +43,26 @@ typedef struct	s_imege
 	void		*img;
 	int			width;
 	int			high;
-	int			position_x;
-	int			position_y;
+
+	int			default_angle_x;
+	int			default_angle_y;
+	int			default_angle_z;
+	int			default_location_x;
+	int			default_location_y;
+	int			default_object_hight;
+	double		default_zoom;
+	int			default_image_hight;
+	int			default_image_widht;
+	int			current_angle_x;
+	int			current_angle_y;
+	int			current_angle_z;
+	int			current_location_x;
+	int			current_location_y;
+	int			current_object_hight;
+	double		current_zoom;
+	int			current_image_hight;
+	int			current_image_widht;
+
 }				t_image;
 
 typedef struct	s_data_im_addr
@@ -61,31 +87,40 @@ typedef struct	s_pixel_info
 	int			current_color_r;
 	int			current_color_g;
 	int			current_color_b;
+	int			draw_x;
+	int			draw_y;
 }				t_pixel_info;
 
 
-typedef struct	s_image_setting
+typedef struct	s_allstruct
 {
-	int			default_angle_x;
-	int			default_angle_y;
-	int			default_location_x;
-	int			default_location_y;
-	int			default_object_hight;
-	double		default_zoom;
-	int			default_image_hight;
-	int			default_image_widht;
-	int			current_angle_x;
-	int			current_angle_y;
-	int			current_location_x;
-	int			current_location_y;
-	int			current_object_hight;
-	double		current_zoom;
-	int			current_image_hight;
-	int			current_image_widht;
+	t_window	*window;
+	t_image		*image;
+	t_pixel_info **pixels_arr;
+}				t_allstruct;
 
-}				t_image_setting;
+typedef struct		s_line
+{
+	int				deltax;
+	int				deltay;
+	int				signx;
+	int				signy;
+	int				error;
+	int				error2;
+	int				x1;
+	int				y1;
+	int				y2;
+	int				color_r;
+	int				color_g;
+	int				color_b;
+	int				x2;
+}					t_line;
 
-int		ft_my_key_func(int keycode, t_window *window);
+void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind);
+void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window);
+void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr);
+
+int		ft_my_key_func(int keycode, t_allstruct *allstruct);
 
 void	ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
 		t_window *window, char **pixels_from_line);

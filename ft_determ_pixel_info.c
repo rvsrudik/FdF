@@ -31,11 +31,14 @@ static void ft_determ_pixel_color(t_pixel_info *pixel_info, char *color)
 	char color_hex[3];
 	color_hex[2] = '\0';
 
-	pixel_info->default_color_r = 0;
-	pixel_info->default_color_g = 0;
-	pixel_info->default_color_b = 0;
+	pixel_info->default_color_r = 255;
+	pixel_info->default_color_g = 255;
+	pixel_info->default_color_b = 255;
 	if (color)
 	{
+		pixel_info->default_color_r = 0;
+		pixel_info->default_color_g = 0;
+		pixel_info->default_color_b = 0;
 		while (*color != '\0')
 			color++;
 		color--;
@@ -61,6 +64,9 @@ static void ft_determ_pixel_color(t_pixel_info *pixel_info, char *color)
 			}
 		}
 	}
+	pixel_info->current_color_r = pixel_info->default_color_r;
+	pixel_info->current_color_g = pixel_info->default_color_g;
+	pixel_info->current_color_b = pixel_info->default_color_b;
 }
 
 void		ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
@@ -83,6 +89,10 @@ void		ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
 		pixels_arr[start_pixel]->default_x = i;
 		pixels_arr[start_pixel]->default_z = ft_atoi(hight_agn_color[0]);
 		pixels_arr[start_pixel]->current_z = ft_atoi(hight_agn_color[0]);
+		if (pixels_arr[start_pixel]->default_z > 0 && !hight_agn_color[1])
+			hight_agn_color[1] = "0xfb1a28";
+		if (pixels_arr[start_pixel]->default_z < 0 && !hight_agn_color[1])
+			hight_agn_color[1] = "0xfbea28";
 		ft_determ_pixel_color(pixels_arr[start_pixel], hight_agn_color[1]);
 		start_pixel++;
 		i++;
