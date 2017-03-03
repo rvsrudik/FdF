@@ -5,9 +5,9 @@
 
 #define WINDOW_HIGH 1024
 #define WINDOW_WIDTH 1600
-#define ANGLE_X 1
-#define ANGLE_Y 1
-#define ANGLE_Z 1
+#define ANGLE_X 60
+#define ANGLE_Y 25
+#define ANGLE_Z 0
 
 
 #define DEFAULT_LOCATION_X 0
@@ -45,6 +45,10 @@ typedef struct	s_imege
 	int			width;
 	int			high;
 
+	int			max_x;
+	int			min_x;
+	int			max_y;
+	int			min_y;
 	int			default_angle_x;
 	int			default_angle_y;
 	int			default_angle_z;
@@ -72,6 +76,8 @@ typedef struct	s_data_im_addr
 	int			size_line;
 	int			endian;
 	char		*data_im_adr;
+	t_image		*image;
+	t_window	*window;
 }				t_data_im_addr;
 
 typedef struct	s_pixel_info

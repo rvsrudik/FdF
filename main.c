@@ -1,13 +1,6 @@
 #include "fdf.h"
 
-void ft_printf_pixel_info(t_pixel_info *pixel_info)
-{
-	printf("----------------------------------------------\n");
-	printf("default: x = %d, y = %d, z = %d\n", pixel_info->default_x, pixel_info->default_y, pixel_info->default_z);
-//	printf("current: x = %d, y = %d, z = %d\n", pixel_info->current_x, pixel_info->current_y, pixel_info->current_z);
-	printf("default: r = %d, g = %d, b = %d\n", pixel_info->default_color_r, pixel_info->default_color_g, pixel_info->default_color_b);
-	printf("----------------------------------------------\n");
-}
+
 
 static void		ft_count_lines(int fd, t_window *window)
 {
@@ -41,37 +34,49 @@ static int		ft_count_pixel_width(char **pixels_line_array)
 }
 
 
-
-
-void ft_image_proection(t_pixel_info *pixel_info)
+void ft_x_rotation(t_pixel_info *pixel_info, t_image *image)
 {
-	float rt = 0.01745329252;
-	float r;
+	float r = 0.01745329252;
 
-	//pixel_info->current_x = pixel_info->default_x;
-	//pixel_info->current_y = pixel_info->default_y;
-	//pixel_info->current_z = pixel_info->default_z;
-
-	r = rt * 60;
-
+	r = r * image->current_angle_x;
+//	printf("%d\n", image->current_angle_x);
 	pixel_info->current_y = pixel_info->current_y * cos(r) + pixel_info->current_z * sin(r);
 	pixel_info->current_z = pixel_info->current_z * cos(r) - pixel_info->current_y * sin(r);
+}
 
-	r = rt * 25;
+void ft_y_rotation(t_pixel_info *pixel_info, t_image *image)
+{
+	float r = 0.01745329252;
+
+	r = r * image->current_angle_y;
 	pixel_info->current_x = pixel_info->current_x * cos(r) - pixel_info->current_z * sin(r);
 	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_x * sin(r);
+}
 
-	r = rt * 0;
+void ft_z_rotation(t_pixel_info *pixel_info, t_image *image)
+{
+	float r = 0.01745329252;
+
+	r = r * image->current_angle_z;
 	pixel_info->current_x = pixel_info->current_x * cos(r) + pixel_info->current_y * sin(r);
 	pixel_info->current_y = pixel_info->current_y * cos(r) - pixel_info->current_x * sin(r);
 
 }
 
 
+
 void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[])
 {
 	int i;
-	i = ((data_im_adr->size_line * (y)) + (x * 4));
+	int start_position_x;
+	int start_position_y;
+	int diff;
+//	if (data_im_adr->image->min_x < 0)
+//		data_im_adr->image->min_x *= -1;
+
+	diff = data_im_adr->size_line * ((data_im_adr->image->min_y + data_im_adr->image->max_y)/2);
+	start_position_x = (data_im_adr->size_line / 2) - ((data_im_adr->image->min_x + data_im_adr->image->max_x)/2 * 4);
+	i = (((data_im_adr->size_line * (y)) + (x*4)) + start_position_x) +  (data_im_adr->size_line * data_im_adr->window->high/2 - diff);
 
 	data_im_adr->data_im_adr[i] = color[2];
 	data_im_adr->data_im_adr[i + 1] = color[1];
@@ -89,9 +94,12 @@ void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 
 	data_im_addr = (t_data_im_addr*)malloc(sizeof(*data_im_addr));
 	data_im_addr->data_im_adr = mlx_get_data_addr(image->img, &data_im_addr->bits_per_pixel, &data_im_addr->size_line, &data_im_addr->endian);
+	data_im_addr->image = image;
+	data_im_addr->window = window;
 	colums = 0;
 	row = 0;
 
+	ft_use_img_setting(image, pixels_arr, window);
 	while (row < window->pixels_hight - 1)
 	{
 		while (colums < window->pixels_width - 1)
@@ -126,6 +134,10 @@ void	ft_set_img_setting(t_image *image)
 	image->current_location_x = image->default_location_x;
 	image->current_location_y = image->default_location_y;
 	image->current_zoom = image->default_zoom;
+	image->max_x = 0;
+	image->min_x = 0;
+	image->max_y = 0;
+	image->min_y = 0;
 }
 
 void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window)
@@ -133,12 +145,32 @@ void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *win
 	int i;
 
 	i = 0;
+	image->max_x = 0;
+	image->min_x = 0;
+	image->max_y = 0;
+	image->min_y = 0;
+	if (image->current_angle_x > 357)
+		image->current_angle_x = 1;
+//	if (image->current_angle_x < 0)
+//		image->current_angle_x = 720;
+
 	while (i < window->pixels_width * window->pixels_hight)
 	{
 		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
 		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
-		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom;
-		ft_image_proection(pixels_arr[i]);
+		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom/2;
+
+		ft_x_rotation(pixels_arr[i], image);
+		ft_y_rotation(pixels_arr[i], image);
+		ft_z_rotation(pixels_arr[i], image);
+		if (image->max_x < pixels_arr[i]->current_x)
+			image->max_x = pixels_arr[i]->current_x;
+		if (image->min_x > pixels_arr[i]->current_x)
+			image->min_x = pixels_arr[i]->current_x;
+		if (image->max_y < pixels_arr[i]->current_y)
+			image->max_y = pixels_arr[i]->current_y;
+		if (image->min_y > pixels_arr[i]->current_y)
+			image->min_y = pixels_arr[i]->current_y;
 		i++;
 	}
 }
