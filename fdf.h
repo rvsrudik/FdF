@@ -3,6 +3,9 @@
 #ifndef FDF_H
 # define FDF_H
 
+#define WINDOW_WIDTH
+#define WINDOW_HIGH
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -21,29 +24,28 @@ typedef struct	s_window
 	void		*win;
 	void		*mlx;
 	int			width;
-	int			hight;
+	int			high;
 	int			pixels_width;
 	int			pixels_hight;
 }				t_window;
+
 
 typedef struct	s_imege
 {
 	void		*img;
 	int			width;
-	int			hight;
+	int			high;
 	int			position_x;
 	int			position_y;
 }				t_image;
 
-typedef struct	s_data_addr
+typedef struct	s_data_im_addr
 {
 	int			bits_per_pixel;
 	int			size_line;
 	int			endian;
-	char		*data_adr;
-}				t_data_addr;
-
-
+	char		*data_im_adr;
+}				t_data_im_addr;
 
 typedef struct	s_pixel_info
 {
@@ -58,24 +60,8 @@ typedef struct	s_pixel_info
 	int			current_z;
 	int			current_color_r;
 	int			current_color_g;
-	int			curretn_color_b;
+	int			current_color_b;
 }				t_pixel_info;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 typedef struct	s_image_setting
@@ -100,5 +86,25 @@ typedef struct	s_image_setting
 }				t_image_setting;
 
 int		ft_my_key_func(int keycode, t_window *window);
+
+void	ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
+		t_window *window, char **pixels_from_line);
+void	ft_read_and_fill_pixel_arr(t_pixel_info **pixels_arr,
+		t_window *window, char **pixels_line_array, int fd);
+char	**ft_pixels_line_to_array(char *line, t_window *window);
+int		ft_hex_to_dig(char color[]);
+/*
+ **---------------------------------------------------------------------
+ **----------------------------->ERRORS<--------------------------------
+*/
+void	ft_error_number_of_params();
+void	ft_error_wrong_fd();
+void	ft_error_wrong_map();
+/*
+ **---------------------------------------------------------------------
+ **------------------------------>END<----------------------------------
+*/
+
+
 
 #endif

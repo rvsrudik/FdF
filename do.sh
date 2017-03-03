@@ -1,1 +1,1 @@
-cc -o mlx libmlx.a ft_my_key_func.c get_next_line.c  ft_strnew_bchar.c libft.a main.c libmlx.a -framework OpenGL -framework AppKit
+cc -o mlx libmlx.a ft_my_key_func.c get_next_line.c ft_hex_to_dig.c ft_errors.c ft_read_and_fill_pixel_arr.c ft_determ_pixel_info.c ft_strnew_bchar.c libft.a main.c libmlx.a -framework OpenGL -framework AppKit

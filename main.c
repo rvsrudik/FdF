@@ -7,14 +7,7 @@
 //	window->position_x = 50;
 //	window->position_y = 50;
 //}
-//
-//
-//static void ft_key_hook(t_window *window)
-//{
-//	mlx_key_hook(window->win, ft_my_key_func, window);
-//}
-//
-//
+
 //void ft_put_pixel_to_image(int x, int y, char *color, t_window *);
 //
 //
@@ -30,10 +23,7 @@
 //
 //	int x = 100;
 //	int	y = 100;
-//
-//
-//
-//
+
 //
 //
 //	window = (t_window*)malloc(sizeof(*window));
@@ -79,23 +69,20 @@
 //	mlx_pixel_put(window->mlx, window->win, 50, 51, 1242520);
 //	ft_key_hook(window);
 //
-//	mlx_loop(window->mlx);
+//
 //	return 0;
 //}
 
-void ft_usage()
+void ft_printf_pixel_info(t_pixel_info *pixel_info)
 {
-	ft_putstr("usage: ./fdf [file_name]\n");
-	exit(0);
+	printf("----------------------------------------------\n");
+	printf("default: x = %d, y = %d, z = %d\n", pixel_info->default_x, pixel_info->default_y, pixel_info->default_z);
+//	printf("current: x = %d, y = %d, z = %d\n", pixel_info->current_x, pixel_info->current_y, pixel_info->current_z);
+	printf("default: r = %d, g = %d, b = %d\n", pixel_info->default_color_r, pixel_info->default_color_g, pixel_info->default_color_b);
+	printf("----------------------------------------------\n");
 }
 
-void ft_wrong_fd()
-{
-	ft_putstr("Can't read from file.\n");
-	exit(0);
-}
-
-void	ft_count_lines(int fd, t_window *window)
+static void		ft_count_lines(int fd, t_window *window)
 {
 	int			lines;
 	char		buff[2000];
@@ -116,124 +103,60 @@ void	ft_count_lines(int fd, t_window *window)
 	window->pixels_hight = lines;
 }
 
-char		**ft_count_pixels_in_line(char *line, t_window *window)
+static int		ft_count_pixel_width(char **pixels_line_array)
 {
-	char 	**pixels_from_line;
-	int 	pixels;
-	int 	i;
+	int pixels;
 
-	i = 0;
 	pixels = 0;
-	pixels_from_line = ft_strsplit(line, ' ');
-
-	while (pixels_from_line[i])
-	{
+	while (pixels_line_array[pixels])
 		pixels++;
-		i++;
-	}
-
-	window->pixels_width = pixels;
-	return (pixels_from_line);
+	return (pixels);
 }
 
-static int	ft_convert_hex_digit_to_dig(int dig)
+void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, t_pixel_info *pixel_arr)
 {
-	char	*tmp;
+	int i;
+	i = ((data_im_adr->size_line * (pixel_arr->current_y * 1)) + (pixel_arr->current_x * 1* 4));
 
-	if (ft_isdigit(dig))
-		dig -= '0';
-	else if ((tmp = ft_strchr("abcdef", dig)))
-	{
-		dig = *tmp - 'a' + 10;;
-	}
-	else if ((tmp = ft_strchr("ABCDEF", dig)))
-	{
-		dig = *tmp - 'A' + 10;
-	}
-	return (dig);
+	data_im_adr->data_im_adr[i] = pixel_arr->default_color_b;
+	data_im_adr->data_im_adr[i + 1] = pixel_arr->default_color_g;
+	data_im_adr->data_im_adr[i + 2] = pixel_arr->default_color_r;
 }
-
-static int	ft_hex_to_dig(char color[])
+void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 {
-	int		digit1_hex;
-	int 	digit2_hex;
-	int 	digit1_dec;
-	int 	digit2_dec;
+	int i = 0;
+	t_data_im_addr *data_im_addr;
 
+	data_im_addr = (t_data_im_addr*)malloc(sizeof(*data_im_addr));
 
-	digit1_hex = color[0];
-	digit2_hex = color[1];
+	data_im_addr->data_im_adr = mlx_get_data_addr(image->img, &data_im_addr->bits_per_pixel, &data_im_addr->size_line, &data_im_addr->endian);
 
-	digit1_dec = ft_convert_hex_digit_to_dig(digit1_hex);
-	digit2_dec = ft_convert_hex_digit_to_dig(digit2_hex);
-	//printf("%s = [%d, %d] ", color, digit1_dec, digit2_dec);
-	return ((digit1_dec * 16) + digit2_dec);
-}
-
-static void	ft_determ_pixel_color(t_pixel_info *pixel_info, char *color)
-{
-	char color_hex[2];
-	if (!color)
+	while (i < window->pixels_width * window->pixels_hight)
 	{
-		pixel_info->default_color_r = 255;
-		pixel_info->default_color_g = 255;
-		pixel_info->default_color_b = 255;
-	}
-	else
-	{
-		while (*color != '\0')
-			color++;
-		color--;
-		color_hex[1] = *color;
-		color--;
-		color_hex[0] = *color;
-		pixel_info->default_color_b = ft_hex_to_dig(color);
-		color--;
-		color_hex[1] = *color;
-		color--;
-		color_hex[0] = *color;
-		pixel_info->default_color_g = ft_hex_to_dig(color);
-		color--;
-		color_hex[1] = *color;
-		color--;
-		color_hex[0] = *color;
-		pixel_info->default_color_r = ft_hex_to_dig(color);
-	}
-//	printf("%-3d, %-3d, %-3d\n", pixel_info->default_color_r, pixel_info->default_color_g, pixel_info->default_color_b);
-}
-
-void	ft_determ_pixel_info(int y, t_pixel_info **pixels_arr, t_window *window, char **pixels_from_line)
-{
-	int				start_pixel;
-	int				i;
-	char			**hight_agn_color;
-	t_pixel_info	*pixel_info;
-
-	i = 0;
-	start_pixel = y * window->pixels_width;
-	while (i < window->pixels_width)
-	{
-		hight_agn_color = ft_strsplit(pixels_from_line[i], ',');
-		pixels_arr[start_pixel] = (t_pixel_info*)malloc(sizeof(t_pixel_info));
-		pixels_arr[start_pixel]->current_y = y;
-		pixels_arr[start_pixel]->default_y = y;
-		pixels_arr[start_pixel]->current_x = i;
-		pixels_arr[start_pixel]->default_x = i;
-		pixels_arr[start_pixel]->default_z = ft_atoi(hight_agn_color[0]);
-		pixels_arr[start_pixel]->current_z = ft_atoi(hight_agn_color[0]);
-		ft_determ_pixel_color(pixels_arr[start_pixel], hight_agn_color[1]);
-		start_pixel++;
+		ft_put_pixel_to_image(data_im_addr, pixels_arr[i]);
 		i++;
 	}
 }
 
-void	ft_fill_pixel_arr(t_pixel_info **pixels_arr, t_window *window, char **pixels_from_line)
+void	ft_fdf(t_window *window, t_pixel_info **pixels_arr, char *name)
 {
-	int 	y;
+	t_image_setting *image_setting;
+	t_image			*image;
 
-	y = 0;
-	ft_determ_pixel_info(y, pixels_arr, window, pixels_from_line);
+	window->high = 1300;
+	window->width = 2000;
+
+	image = (t_image*)malloc(sizeof(*image));
+
+	window->mlx = mlx_init();
+	window->win = mlx_new_window(window->mlx, window->width, window->high, "qwe");
+	image->img = mlx_new_image(window->mlx, window->width, window->high);
+	ft_draw_image(window, image, pixels_arr);
+
+	mlx_put_image_to_window(window->mlx, window->win, image->img, 10, 10);
+	mlx_loop(window->mlx);
 }
+
 
 int		main(int argc, char **argv)
 {
@@ -241,22 +164,33 @@ int		main(int argc, char **argv)
 	int				fd;
 	t_window		*window;
 	t_pixel_info	**pixels_arr;
-	char 			**pixels_from_line;
+	char 			**pixels_line_array;
 
 	if (argc != 2)
-		ft_usage();
+		ft_error_number_of_params();
 	fd = open(argv[1], O_RDONLY);
 	if (fd < 0)
-		ft_wrong_fd();
+		ft_error_wrong_fd();
 	window = (t_window*)malloc(sizeof(*window));
 	ft_count_lines(fd, window);
 	close(fd);
 	fd = open(argv[1], O_RDONLY);
 	get_next_line(fd, &line);
-	pixels_from_line = ft_count_pixels_in_line(line, window);
+	pixels_line_array = ft_pixels_line_to_array(line, window);
+	window->pixels_width = ft_count_pixel_width(pixels_line_array);
 	pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*) * window->pixels_hight * window->pixels_width);
-	ft_fill_pixel_arr(pixels_arr, window, pixels_from_line);
-	//printf("|%d|\n", pixels_arr[9]->default_y);
+	ft_read_and_fill_pixel_arr(pixels_arr, window, pixels_line_array, fd);
+
+	ft_fdf(window, pixels_arr, argv[1]);
+
+
+
+	int start_pixel = 0;
+//	while (start_pixel < window->pixels_hight * window->pixels_width)
+//	{
+//		ft_printf_pixel_info(pixels_arr[start_pixel]);
+//		start_pixel++;
+//	}
 	close(fd);
 	return (0);
 }
