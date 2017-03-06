@@ -60,10 +60,10 @@ static void ft_move_image(int keycode, t_allstruct *allstruct)
 
 static void ft_rotate_x(int keycode, t_allstruct *allstruct)
 {
-	if (keycode == 12)
-		allstruct->image->current_angle_x -= 5;
-	if (keycode == 13)
-		allstruct->image->current_angle_x += 5;
+	if (keycode == 12 || keycode == 4)
+		allstruct->image->current_angle_x -= 6;
+	if (keycode == 13 || keycode == 5)
+		allstruct->image->current_angle_x += 6;
 	mlx_destroy_image(allstruct->window->mlx, allstruct->image->img);
 	mlx_clear_window(allstruct->window->mlx, allstruct->window->win);
 	allstruct->image->img = mlx_new_image(allstruct->window->mlx, allstruct->window->width, allstruct->window->high);
@@ -74,10 +74,10 @@ static void ft_rotate_x(int keycode, t_allstruct *allstruct)
 
 static void ft_rotate_y(int keycode, t_allstruct *allstruct)
 {
-	if (keycode == 0)
-		allstruct->image->current_angle_y -= 3;
-	if (keycode == 1)
-		allstruct->image->current_angle_y += 3;
+	if (keycode == 1 || keycode == 6)
+		allstruct->image->current_angle_y -= 6;
+	if (keycode == 0 || keycode == 7)
+		allstruct->image->current_angle_y += 6;
 	mlx_destroy_image(allstruct->window->mlx, allstruct->image->img);
 	mlx_clear_window(allstruct->window->mlx, allstruct->window->win);
 	allstruct->image->img = mlx_new_image(allstruct->window->mlx, allstruct->window->width, allstruct->window->high);
@@ -113,7 +113,18 @@ int			ft_my_key_func(int keycode, t_allstruct *allstruct)
 		ft_rotate_x(keycode, allstruct);
 	if (keycode == 0 || keycode == 1)
 		ft_rotate_y(keycode, allstruct);
-	if (keycode == 6 || keycode == 7)
-		ft_rotate_z(keycode, allstruct);
+	//if (keycode == 6 || keycode == 7)
+	//	ft_rotate_z(keycode, allstruct);
 	return (0);
 }
+
+int			ft_my_mouse_func(int buttom, int x, int y, t_allstruct *allstruct)
+{
+	if (buttom == 4 || buttom == 5)
+		ft_rotate_x(buttom, allstruct);
+	if (buttom == 7 || buttom == 6)
+		ft_rotate_y(buttom, allstruct);
+	printf("btm %d, x %d, y %d\n", buttom, x, y);
+	return (0);
+}
+

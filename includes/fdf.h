@@ -5,7 +5,7 @@
 
 #define WINDOW_HIGH 1024
 #define WINDOW_WIDTH 1600
-#define ANGLE_X 300
+#define ANGLE_X 25
 #define ANGLE_Y 25
 #define ANGLE_Z 0
 
@@ -94,8 +94,7 @@ typedef struct	s_pixel_info
 	int			current_color_r;
 	int			current_color_g;
 	int			current_color_b;
-	int			draw_x;
-	int			draw_y;
+
 }				t_pixel_info;
 
 
@@ -132,7 +131,7 @@ void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr);
 void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[]);
 
 
-
+int			ft_my_mouse_func(int buttom, int x, int y, t_allstruct *allstruct);
 
 int		ft_my_key_func(int keycode, t_allstruct *allstruct);
 

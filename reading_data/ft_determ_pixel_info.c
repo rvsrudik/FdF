@@ -12,7 +12,8 @@
 
 #include "fdf.h"
 
-static void ft_determ_pixel_color(t_pixel_info *pixel_info, char *color, char color_hex[])
+static void	ft_determ_pixel_color(t_pixel_info *pixel_info,
+			char *color, char color_hex[])
 {
 	color--;
 	color_hex[1] = *(color);
@@ -38,7 +39,7 @@ static void ft_determ_pixel_color(t_pixel_info *pixel_info, char *color, char co
 	}
 }
 
-static void ft_determ_colors(t_pixel_info *pixel_info, char *color)
+static void	ft_determ_colors(t_pixel_info *pixel_info, char *color)
 {
 	char color_hex[3];
 
@@ -57,8 +58,8 @@ static void ft_determ_colors(t_pixel_info *pixel_info, char *color)
 	}
 }
 
-void	ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
-		t_window *window, char **pixels_from_line)
+void		ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
+			t_window *window, char **pixels_from_line)
 {
 	int				start_pixel;
 	int				i;

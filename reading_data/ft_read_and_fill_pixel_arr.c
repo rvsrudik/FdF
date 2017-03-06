@@ -15,8 +15,8 @@
 char	**ft_pixels_line_to_array(char *line, t_window *window)
 {
 	char	**pixels_from_line;
-	pixels_from_line = ft_strsplit(line, ' ');
 
+	pixels_from_line = ft_strsplit(line, ' ');
 	return (pixels_from_line);
 }
 

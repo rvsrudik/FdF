@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/Vitalii/Desktop/Unit/projects/C/FdF
+CMAKE_SOURCE_DIR = /nfs/2016/v/vrudenko/projects/C/FdF
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/Vitalii/Desktop/Unit/projects/C/FdF/cmake-build-debug
+CMAKE_BINARY_DIR = /nfs/2016/v/vrudenko/projects/C/FdF/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/FdF.dir/depend.make
@@ -66,6 +66,6 @@ CMakeFiles/FdF.dir/clean:
 .PHONY : CMakeFiles/FdF.dir/clean
 
 CMakeFiles/FdF.dir/depend:
-	cd /Users/Vitalii/Desktop/Unit/projects/C/FdF/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/Vitalii/Desktop/Unit/projects/C/FdF /Users/Vitalii/Desktop/Unit/projects/C/FdF /Users/Vitalii/Desktop/Unit/projects/C/FdF/cmake-build-debug /Users/Vitalii/Desktop/Unit/projects/C/FdF/cmake-build-debug /Users/Vitalii/Desktop/Unit/projects/C/FdF/cmake-build-debug/CMakeFiles/FdF.dir/DependInfo.cmake --color=$(COLOR)
+	cd /nfs/2016/v/vrudenko/projects/C/FdF/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /nfs/2016/v/vrudenko/projects/C/FdF /nfs/2016/v/vrudenko/projects/C/FdF /nfs/2016/v/vrudenko/projects/C/FdF/cmake-build-debug /nfs/2016/v/vrudenko/projects/C/FdF/cmake-build-debug /nfs/2016/v/vrudenko/projects/C/FdF/cmake-build-debug/CMakeFiles/FdF.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/FdF.dir/depend
 
