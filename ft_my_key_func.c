@@ -96,6 +96,7 @@ static void ft_rotate_z(int keycode, t_allstruct *allstruct)
 	mlx_clear_window(allstruct->window->mlx, allstruct->window->win);
 	allstruct->image->img = mlx_new_image(allstruct->window->mlx, allstruct->window->width, allstruct->window->high);
 	ft_draw_image(allstruct->window, allstruct->image, allstruct->pixels_arr);
+
 	mlx_put_image_to_window(allstruct->window->mlx, allstruct->window->win, allstruct->image->img,
 							allstruct->image->current_location_x, allstruct->image->current_location_y);
 }

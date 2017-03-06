@@ -36,19 +36,54 @@ static int		ft_count_pixel_width(char **pixels_line_array)
 
 void ft_x_rotation(t_pixel_info *pixel_info, t_image *image, t_window *window,  t_pixel_info **pixels_arr)
 {
-	float r = 0.01745329252;
+	float	r;
+	int		high_figure;
+
+	r = 0.01745329252;
 	if (image->current_angle_x > 360)
 		image->current_angle_x = 0;
 	if (image->current_angle_x < 0)
 		image->current_angle_x = 360;
 
+	if (image->min_y < 0)
+		high_figure = image->max_y + image->min_x;
+	else if (image->min_y > 0)
+		high_figure = image->max_y - image->min_x;
 
+//	printf("%d, %d, %d\n",high_figure, image->min_y, image->max_y);
 	r = r * image->current_angle_x;
+	//pixel_info->current_y -= window->pixels_hight * image->current_zoom * 2;
 	pixel_info->current_y = (pixel_info->current_y) * cos(r) - (pixel_info->current_z) * sin(r);
 	pixel_info->current_z = (pixel_info->current_y) * sin(r) + (pixel_info->current_z) * cos(r);
+//	pixel_info->current_y -= window->pixels_hight * image->current_zoom * 2;
+
 }
 
-void ft_y_rotation(t_pixel_info *pixel_info, t_image *image)
+void ft_determ_min_max_x_y(t_image *image, t_window *window, t_pixel_info **pixels_arr)
+{
+	int i;
+
+	i = 0;
+	image->max_x = 0;
+	image->min_x = 0;
+	image->max_y = 0;
+	image->min_y = 0;
+
+	while (i < window->pixels_width * window->pixels_hight)
+	{
+		if (image->max_x < pixels_arr[i]->current_x)
+			image->max_x = pixels_arr[i]->current_x;
+		if (image->min_x > pixels_arr[i]->current_x)
+			image->min_x = pixels_arr[i]->current_x;
+		if (image->max_y < pixels_arr[i]->current_y)
+			image->max_y = pixels_arr[i]->current_y;
+		if (image->min_y > pixels_arr[i]->current_y)
+			image->min_y = pixels_arr[i]->current_y;
+		i++;
+	}
+}
+
+void ft_y_rotation(t_pixel_info *pixel_info, t_image *image, t_window *window,  t_pixel_info **pixels_arr)
 {
 	float r = 0.01745329252;
 	if (image->current_angle_y > 360)
@@ -56,9 +91,16 @@ void ft_y_rotation(t_pixel_info *pixel_info, t_image *image)
 	if (image->current_angle_y < 0)
 		image->current_angle_y = 360;
 
+	int		width_figure;
+
+//	width_figure = image->max_x - image->min_x;
+
+
 	r = r * image->current_angle_y;
-	pixel_info->current_x = pixel_info->current_x * cos(r) - pixel_info->current_z * sin(r);
-	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_x * sin(r);
+
+	pixel_info->current_x = (pixel_info->current_x ) * cos(r) - pixel_info->current_z * sin(r);
+	pixel_info->current_z = pixel_info->current_z * cos(r) + (pixel_info->current_x ) * sin(r);
+	//pixel_info->current_x -= width_figure / 2;
 }
 
 void ft_z_rotation(t_pixel_info *pixel_info, t_image *image)
@@ -68,8 +110,6 @@ void ft_z_rotation(t_pixel_info *pixel_info, t_image *image)
 	r = r * image->current_angle_z;
 	pixel_info->current_x = pixel_info->current_x * cos(r) + pixel_info->current_y * sin(r);
 	pixel_info->current_y = pixel_info->current_y * cos(r) - pixel_info->current_x * sin(r);
-	pixel_info->current_y -=20;
-	pixel_info->current_x -=20;
 }
 
 
@@ -168,33 +208,34 @@ void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *win
 	image->min_x = 0;
 	image->max_y = 0;
 	image->min_y = 0;
-
+	ft_determ_min_max_x_y(image, window, pixels_arr);
 	while (i < window->pixels_width * window->pixels_hight)
 	{
 		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
 		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
 		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom/2;
+		pixels_arr[i]->current_x -= window->pixels_width * image->current_zoom /2;
+		pixels_arr[i]->current_y -= window->pixels_hight * image->current_zoom /2;
 
-		pixels_arr[i]->current_color_r = pixels_arr[i]->default_color_r;
+			pixels_arr[i]->current_color_r = pixels_arr[i]->default_color_r;
 		pixels_arr[i]->current_color_g = pixels_arr[i]->default_color_g;
 		pixels_arr[i]->current_color_b = pixels_arr[i]->default_color_b;
-		if (image->max_x < pixels_arr[i]->current_x)
-			image->max_x = pixels_arr[i]->current_x;
-		if (image->min_x > pixels_arr[i]->current_x)
-			image->min_x = pixels_arr[i]->current_x;
-		if (image->max_y < pixels_arr[i]->current_y)
-			image->max_y = pixels_arr[i]->current_y;
-		if (image->min_y > pixels_arr[i]->current_y)
-			image->min_y = pixels_arr[i]->current_y;
+//		if (image->max_x < pixels_arr[i]->current_x)
+//			image->max_x = pixels_arr[i]->current_x;
+//		if (image->min_x > pixels_arr[i]->current_x)
+//			image->min_x = pixels_arr[i]->current_x;
+//		if (image->max_y < pixels_arr[i]->current_y)
+//			image->max_y = pixels_arr[i]->current_y;
+//		if (image->min_y > pixels_arr[i]->current_y)
+//			image->min_y = pixels_arr[i]->current_y;
 		ft_x_rotation(pixels_arr[i], image, window, pixels_arr);
-		ft_y_rotation(pixels_arr[i], image);
-		ft_z_rotation(pixels_arr[i], image);
+		ft_y_rotation(pixels_arr[i], image, window, pixels_arr);
 		i++;
 	}
 
+
+
 }
-
-
 
 
 void	ft_fdf(t_window *window, t_pixel_info **pixels_arr, char *name)
