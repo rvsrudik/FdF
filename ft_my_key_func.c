@@ -1,4 +1,4 @@
-#include "fdf.h"
+#include "includes/fdf.h"
 
 static void	ft_exit_program(t_allstruct *allstruct)
 {
@@ -23,15 +23,15 @@ static void	ft_zoom(int keycode, t_allstruct *allstruct)
 	if (keycode == 69 || keycode == 24)
 	{
 		allstruct->image->current_zoom += 1;
-		allstruct->image->current_location_y -= allstruct->image->current_zoom/2;
-		allstruct->image->current_location_x -= allstruct->image->current_zoom/2;
+	//	allstruct->image->current_location_y -= allstruct->image->current_zoom/2;
+	//	allstruct->image->current_location_x -= allstruct->image->current_zoom/2;
 		ft_use_img_setting(allstruct->image, allstruct->pixels_arr, allstruct->window);
 	}
 	if ((keycode == 78 || keycode == 27) && allstruct->image->current_zoom > 1)
 	{
 		allstruct->image->current_zoom -= 1;
-		allstruct->image->current_location_y += allstruct->image->current_zoom/2;
-		allstruct->image->current_location_x += allstruct->image->current_zoom/2;
+	//	allstruct->image->current_location_y += allstruct->image->current_zoom/2;
+	//	allstruct->image->current_location_x += allstruct->image->current_zoom/2;
 		ft_use_img_setting(allstruct->image, allstruct->pixels_arr, allstruct->window);
 	}
 	mlx_destroy_image(allstruct->window->mlx, allstruct->image->img);

@@ -1,1 +1,16 @@
-cc -o mlx libmlx.a ft_my_key_func.c get_next_line.c ft_hex_to_dig.c line_ft_line.c ft_errors.c ft_read_and_fill_pixel_arr.c ft_determ_pixel_info.c ft_strnew_bchar.c libft.a main.c libmlx.a -framework OpenGL -framework AppKit
+cc -o fdf_vrud \
+\
+ help_func/libmlx.a \
+ help_func/libft.a \
+ help_func/get_next_line.c \
+\
+ reading_data/ft_hex_to_dig.c \
+ reading_data/ft_errors.c \
+ reading_data/ft_read_and_fill_pixel_arr.c \
+ reading_data/ft_determ_pixel_info.c \
+\
+ line_ft_line.c \
+ ft_my_key_func.c \
+ main.c \
+ \
+ -Iincludes -framework OpenGL -framework AppKit

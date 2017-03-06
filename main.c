@@ -1,4 +1,4 @@
-#include "fdf.h"
+#include "includes/fdf.h"
 
 
 
@@ -37,11 +37,19 @@ static int		ft_count_pixel_width(char **pixels_line_array)
 void ft_x_rotation(t_pixel_info *pixel_info, t_image *image)
 {
 	float r = 0.01745329252;
+	if (image->current_angle_x > 180)
+		image->current_angle_x = -180;
+	if (image->current_angle_x < -180)
+		image->current_angle_x = 180;
 
+//	printf("angle %d\n", image->current_angle_x);
 	r = r * image->current_angle_x;
-//	printf("%d\n", image->current_angle_x);
+	printf("%d\n", image->current_angle_x);
 	pixel_info->current_y = pixel_info->current_y * cos(r) + pixel_info->current_z * sin(r);
-	pixel_info->current_z = pixel_info->current_z * cos(r) - pixel_info->current_y * sin(r);
+	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_y * sin(r);
+//	pixel_info->current_x = pixel_info->current_x * cos(r) - pixel_info->current_z * sin(r);
+//	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_x * sin(r);
+
 }
 
 void ft_y_rotation(t_pixel_info *pixel_info, t_image *image)
@@ -49,8 +57,8 @@ void ft_y_rotation(t_pixel_info *pixel_info, t_image *image)
 	float r = 0.01745329252;
 
 	r = r * image->current_angle_y;
-	pixel_info->current_x = pixel_info->current_x * cos(r) - pixel_info->current_z * sin(r);
-	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_x * sin(r);
+//	pixel_info->current_x = pixel_info->current_x * cos(r) - pixel_info->current_z * sin(r);
+//	pixel_info->current_z = pixel_info->current_z * cos(r) + pixel_info->current_x * sin(r);
 }
 
 void ft_z_rotation(t_pixel_info *pixel_info, t_image *image)
@@ -58,8 +66,8 @@ void ft_z_rotation(t_pixel_info *pixel_info, t_image *image)
 	float r = 0.01745329252;
 
 	r = r * image->current_angle_z;
-	pixel_info->current_x = pixel_info->current_x * cos(r) + pixel_info->current_y * sin(r);
-	pixel_info->current_y = pixel_info->current_y * cos(r) - pixel_info->current_x * sin(r);
+//	pixel_info->current_x = pixel_info->current_x * cos(r) + pixel_info->current_y * sin(r);
+//	pixel_info->current_y = pixel_info->current_y * cos(r) - pixel_info->current_x * sin(r);
 
 }
 
@@ -71,11 +79,14 @@ void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[
 	int start_position_x;
 	int start_position_y;
 	int diff;
+	//int diff2;
 //	if (data_im_adr->image->min_x < 0)
 //		data_im_adr->image->min_x *= -1;
 
 	diff = data_im_adr->size_line * ((data_im_adr->image->min_y + data_im_adr->image->max_y)/2);
+	//diff = 0;
 	start_position_x = (data_im_adr->size_line / 2) - ((data_im_adr->image->min_x + data_im_adr->image->max_x)/2 * 4);
+	//start_position_x = 0;
 	i = (((data_im_adr->size_line * (y)) + (x*4)) + start_position_x) +  (data_im_adr->size_line * data_im_adr->window->high/2 - diff);
 
 	data_im_adr->data_im_adr[i] = color[2];
@@ -149,8 +160,7 @@ void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *win
 	image->min_x = 0;
 	image->max_y = 0;
 	image->min_y = 0;
-	if (image->current_angle_x > 357)
-		image->current_angle_x = 1;
+
 //	if (image->current_angle_x < 0)
 //		image->current_angle_x = 720;
 
@@ -159,6 +169,10 @@ void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *win
 		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
 		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
 		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom/2;
+
+		pixels_arr[i]->current_color_r = pixels_arr[i]->default_color_r;
+		pixels_arr[i]->current_color_g = pixels_arr[i]->default_color_g;
+		pixels_arr[i]->current_color_b = pixels_arr[i]->default_color_b;
 
 		ft_x_rotation(pixels_arr[i], image);
 		ft_y_rotation(pixels_arr[i], image);
@@ -204,8 +218,7 @@ int		main(int argc, char **argv)
 {
 	char			*line;
 	int				fd;
-	t_window		*window;
-	t_pixel_info	**pixels_arr;
+	t_allstruct		*allstruct;
 	char 			**pixels_line_array;
 
 	if (argc != 2)
@@ -213,17 +226,18 @@ int		main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY);
 	if (fd < 0)
 		ft_error_wrong_fd();
-	window = (t_window*)malloc(sizeof(*window));
-	ft_count_lines(fd, window);
+	allstruct = (t_allstruct*)malloc(sizeof(*allstruct));
+	allstruct->window = (t_window*)malloc(sizeof(*allstruct->window));
+	ft_count_lines(fd, allstruct->window);
 	close(fd);
 	fd = open(argv[1], O_RDONLY);
 	get_next_line(fd, &line);
-	pixels_line_array = ft_pixels_line_to_array(line, window);
-	window->pixels_width = ft_count_pixel_width(pixels_line_array);
-	pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*) * window->pixels_hight * window->pixels_width);
-	ft_read_and_fill_pixel_arr(pixels_arr, window, pixels_line_array, fd);
-	ft_fdf(window, pixels_arr, argv[1]);
+	pixels_line_array = ft_pixels_line_to_array(line, allstruct->window);
+	allstruct->window->pixels_width = ft_count_pixel_width(pixels_line_array);
+	allstruct->pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*) *  allstruct->window->pixels_hight * allstruct->window->pixels_width);
 
+	ft_read_and_fill_pixel_arr(allstruct, pixels_line_array, fd);
+	ft_fdf(allstruct->window, allstruct->pixels_arr, argv[1]);
 	close(fd);
 	return (0);
 }

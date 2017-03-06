@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strnew_bchar.c                                  :+:      :+:    :+:   */
+/*   ft_errors.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vrudenko <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/19 14:36:35 by vrudenko          #+#    #+#             */
-/*   Updated: 2017/01/19 14:40:22 by vrudenko         ###   ########.fr       */
+/*   Created: 2017/03/02 14:52:11 by vrudenko          #+#    #+#             */
+/*   Updated: 2017/03/02 14:52:16 by vrudenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-char	*ft_strnew_bchar(size_t size, char c)
+void	ft_error_number_of_params(void)
 {
-	char		*str;
-	size_t		i;
+	ft_putstr("usage: ./fdf [file_name]\n");
+	exit(0);
+}
 
-	i = 0;
-	if ((str = (char*)(malloc(size + 1))) == NULL)
-		return (NULL);
-	str[size] = '\0';
-	while (i < size)
-	{
-		str[i] = c;
-		i++;
-	}
-	return (str);
+void	ft_error_wrong_fd(void)
+{
+	ft_putstr("Can't read from file.\n");
+	exit(0);
+}
+
+void	ft_error_wrong_map(void)
+{
+	ft_putstr("Wrong map.");
+	exit(0);
 }

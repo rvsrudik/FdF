@@ -5,10 +5,11 @@
 
 #define WINDOW_HIGH 1024
 #define WINDOW_WIDTH 1600
-#define ANGLE_X 60
+#define ANGLE_X 300
 #define ANGLE_Y 25
 #define ANGLE_Z 0
 
+// 1024 1600
 
 #define DEFAULT_LOCATION_X 0
 #define DEFAULT_LOCATION_Y 0
@@ -18,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include "minilibx_macos/mlx.h"
+#include "../minilibx_macos/mlx.h"
 #include "libft.h"
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -26,7 +27,6 @@
 #include "get_next_line.h"
 #include <math.h>
 
-char	*ft_strnew_bchar(size_t size, char c);
 
 typedef struct	s_window
 {
@@ -138,8 +138,7 @@ int		ft_my_key_func(int keycode, t_allstruct *allstruct);
 
 void	ft_determ_pixel_info(int y, t_pixel_info **pixels_arr,
 		t_window *window, char **pixels_from_line);
-void	ft_read_and_fill_pixel_arr(t_pixel_info **pixels_arr,
-		t_window *window, char **pixels_line_array, int fd);
+void	ft_read_and_fill_pixel_arr(t_allstruct *allstruct, char **pixels_line_array, int fd);
 char	**ft_pixels_line_to_array(char *line, t_window *window);
 int		ft_hex_to_dig(char color[]);
 /*
