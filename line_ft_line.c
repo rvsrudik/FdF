@@ -16,6 +16,7 @@
 
 void	ft_help(t_line *line, t_window *wind, t_data_im_addr *data_im_addr, int color[])
 {
+
 	while (line->x1 != line->x2 || line->y1 != line->y2)
 	{
 		ft_put_pixel_to_image(data_im_addr, line->x1, line->y1, color);

@@ -5,14 +5,15 @@
 
 #define WINDOW_HIGH 1024
 #define WINDOW_WIDTH 1600
+#define DEFAULT_LOCATION_X -1600
+#define DEFAULT_LOCATION_Y -1024
+
 #define ANGLE_X 25
 #define ANGLE_Y 25
 #define ANGLE_Z 0
 
-// 1024 1600
 
-#define DEFAULT_LOCATION_X 0
-#define DEFAULT_LOCATION_Y 0
+
 #define ZOOM 1
 
 
@@ -63,6 +64,9 @@ typedef struct	s_imege
 	int			current_angle_z;
 	int			current_location_x;
 	int			current_location_y;
+	int			add_to_color_r;
+	int			add_to_color_g;
+	int			add_to_color_b;
 	int			current_object_hight;
 	double		current_zoom;
 	int			current_image_hight;
@@ -103,6 +107,7 @@ typedef struct	s_allstruct
 	t_window	*window;
 	t_image		*image;
 	t_pixel_info **pixels_arr;
+	t_data_im_addr *data_im_addr;
 }				t_allstruct;
 
 typedef struct		s_line
@@ -123,15 +128,15 @@ typedef struct		s_line
 }					t_line;
 
 void	ft_line(t_pixel_info *a, t_pixel_info *b, t_window *wind,  t_image *img, t_data_im_addr *data_im_addr);
-void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window);
-void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr);
+int	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window);
+int	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr);
 
 
 
 void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[]);
 
 
-int			ft_my_mouse_func(int buttom, int x, int y, t_allstruct *allstruct);
+int		ft_my_mouse_func(int buttom, int x, int y, t_allstruct *allstruct);
 
 int		ft_my_key_func(int keycode, t_allstruct *allstruct);
 

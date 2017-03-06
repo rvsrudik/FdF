@@ -1,7 +1,6 @@
 #include "includes/fdf.h"
 
 
-
 static void		ft_count_lines(int fd, t_window *window)
 {
 	int			lines;
@@ -44,44 +43,12 @@ void ft_x_rotation(t_pixel_info *pixel_info, t_image *image, t_window *window,  
 		image->current_angle_x = 0;
 	if (image->current_angle_x < 0)
 		image->current_angle_x = 360;
-
-	if (image->min_y < 0)
-		high_figure = image->max_y + image->min_x;
-	else if (image->min_y > 0)
-		high_figure = image->max_y - image->min_x;
-
-//	printf("%d, %d, %d\n",high_figure, image->min_y, image->max_y);
 	r = r * image->current_angle_x;
-	//pixel_info->current_y -= window->pixels_hight * image->current_zoom * 2;
 	pixel_info->current_y = (pixel_info->current_y) * cos(r) - (pixel_info->current_z) * sin(r);
 	pixel_info->current_z = (pixel_info->current_y) * sin(r) + (pixel_info->current_z) * cos(r);
-//	pixel_info->current_y -= window->pixels_hight * image->current_zoom * 2;
 
 }
 
-void ft_determ_min_max_x_y(t_image *image, t_window *window, t_pixel_info **pixels_arr)
-{
-	int i;
-
-	i = 0;
-	image->max_x = 0;
-	image->min_x = 0;
-	image->max_y = 0;
-	image->min_y = 0;
-
-	while (i < window->pixels_width * window->pixels_hight)
-	{
-		if (image->max_x < pixels_arr[i]->current_x)
-			image->max_x = pixels_arr[i]->current_x;
-		if (image->min_x > pixels_arr[i]->current_x)
-			image->min_x = pixels_arr[i]->current_x;
-		if (image->max_y < pixels_arr[i]->current_y)
-			image->max_y = pixels_arr[i]->current_y;
-		if (image->min_y > pixels_arr[i]->current_y)
-			image->min_y = pixels_arr[i]->current_y;
-		i++;
-	}
-}
 
 void ft_y_rotation(t_pixel_info *pixel_info, t_image *image, t_window *window,  t_pixel_info **pixels_arr)
 {
@@ -90,26 +57,9 @@ void ft_y_rotation(t_pixel_info *pixel_info, t_image *image, t_window *window,  
 		image->current_angle_y = 0;
 	if (image->current_angle_y < 0)
 		image->current_angle_y = 360;
-
-	int		width_figure;
-
-//	width_figure = image->max_x - image->min_x;
-
-
 	r = r * image->current_angle_y;
-
 	pixel_info->current_x = (pixel_info->current_x ) * cos(r) - pixel_info->current_z * sin(r);
 	pixel_info->current_z = pixel_info->current_z * cos(r) + (pixel_info->current_x ) * sin(r);
-	//pixel_info->current_x -= width_figure / 2;
-}
-
-void ft_z_rotation(t_pixel_info *pixel_info, t_image *image)
-{
-	float r = 0.01745329252;
-
-	r = r * image->current_angle_z;
-	pixel_info->current_x = pixel_info->current_x * cos(r) + pixel_info->current_y * sin(r);
-	pixel_info->current_y = pixel_info->current_y * cos(r) - pixel_info->current_x * sin(r);
 }
 
 
@@ -119,25 +69,19 @@ void	ft_put_pixel_to_image(t_data_im_addr *data_im_adr, int x, int y, int color[
 	int start_position_x;
 	int start_position_y;
 	int diff;
-	//int diff2;
-//	if (data_im_adr->image->min_x < 0)
-//		data_im_adr->image->min_x *= -1;
 
-	//diff = data_im_adr->size_line * ((data_im_adr->image->min_y + data_im_adr->image->max_y)/2);
 	diff = 0;
-	//start_position_x = (data_im_adr->size_line / 2) - ((data_im_adr->image->min_x + data_im_adr->image->max_x)/2 * 4);
-	start_position_x = 800 * 4;
-	i = (((data_im_adr->size_line * (y)) + (x*4)) + start_position_x) +  (data_im_adr->size_line * data_im_adr->window->high/2 - diff);
-
+	start_position_x = 2400;
+	start_position_y = 1536;
+	i = (((data_im_adr->size_line * (y + start_position_y)) + ((x + start_position_x)*4)));
 	data_im_adr->data_im_adr[i] = color[2];
 	data_im_adr->data_im_adr[i + 1] = color[1];
 	data_im_adr->data_im_adr[i + 2] = color[0];
 }
 
 
-void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
+int		ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 {
-	int i = 0;
 	int colums;
 	int row;
 	t_data_im_addr *data_im_addr;
@@ -149,8 +93,10 @@ void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 	data_im_addr->window = window;
 	colums = 0;
 	row = 0;
+	if (!ft_use_img_setting(image, pixels_arr, window))
+		return (0);
 
-	ft_use_img_setting(image, pixels_arr, window);
+
 	while (row < window->pixels_hight - 1)
 	{
 		while (colums < window->pixels_width - 1)
@@ -168,25 +114,101 @@ void	ft_draw_image(t_window *window, t_image *image, t_pixel_info **pixels_arr)
 		ft_line(pixels_arr[colums + (window->pixels_width * row)], pixels_arr[colums + (window->pixels_width * row) + 1], window, image, data_im_addr);
 		colums++;
 	}
-	while (i < window->pixels_width * window->pixels_hight)
-    {
-        color[0] = pixels_arr[i]->default_color_r;
-        color[1] = pixels_arr[i]->default_color_g;
-        color[2] = pixels_arr[i]->default_color_b;
-	    ft_put_pixel_to_image(data_im_addr, pixels_arr[i]->current_x, pixels_arr[i]->current_y, color);
-	    i++;
-	}
+
+	return (1);
 }
 
-void	ft_set_img_setting(t_image *image)
+
+
+int	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window)
+{
+	int i;
+
+	i = 0;
+	image->max_x = 0;
+	image->min_x = 0;
+	image->max_y = 0;
+	image->min_y = 0;
+	while (i < window->pixels_width * window->pixels_hight)
+	{
+		pixels_arr[i]->current_color_r = pixels_arr[i]->default_color_r;
+		pixels_arr[i]->current_color_g = pixels_arr[i]->default_color_g;
+		pixels_arr[i]->current_color_b = pixels_arr[i]->default_color_b;
+		pixels_arr[i]->current_color_r += image->add_to_color_r;
+		pixels_arr[i]->current_color_g += image->add_to_color_g;
+		pixels_arr[i]->current_color_b += image->add_to_color_b;
+		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
+		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
+		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom / 2;
+		pixels_arr[i]->current_x -= window->pixels_width * image->current_zoom / 2;
+		pixels_arr[i]->current_y -= window->pixels_hight * image->current_zoom / 2;
+		ft_x_rotation(pixels_arr[i], image, window, pixels_arr);
+		ft_y_rotation(pixels_arr[i], image, window, pixels_arr);
+		if (image->max_x < pixels_arr[i]->current_x)
+			image->max_x = pixels_arr[i]->current_x;
+		if (image->min_x > pixels_arr[i]->current_x)
+			image->min_x = pixels_arr[i]->current_x;
+		if (image->max_y < pixels_arr[i]->current_y)
+			image->max_y = pixels_arr[i]->current_y;
+		if (image->min_y > pixels_arr[i]->current_y)
+			image->min_y = pixels_arr[i]->current_y;
+		i++;
+	}
+	if (image->max_x > image->width / 4)
+		return 0;
+	if (image->max_y > image->high / 4)
+		return 0;
+	if (image->max_y < 0)
+		return 0;
+	if (image->max_x < 0)
+		return 0;
+	return 1;
+}
+
+int ft_determ_zoom(t_image *image, t_window *window)
+{
+	float i;
+	float k;
+	int high;
+	int width;
+	int zoom;
+
+	i = 0;
+	k = 0;
+	high = window->high;
+	width = window->width;
+	while (high > 0)
+	{
+		high -= window->pixels_hight;
+		i++;
+	}
+	while (width > 0)
+	{
+		width -= window->pixels_width;
+		k++;
+	}
+	k = k * 0.3;
+	i = i * 0.3;
+	if (k < 1 || i < 1)
+		zoom = 1;
+	else if (k < i)
+		zoom = k;
+	else if (i < k)
+		zoom = i;
+	return (zoom);
+}
+
+void	ft_set_img_setting(t_image *image, t_window *window)
 {
 	image->default_angle_x = ANGLE_X;
 	image->default_angle_z = ANGLE_Y;
 	image->default_angle_z = ANGLE_Z;
 	image->default_location_x = DEFAULT_LOCATION_X;
- 	image->default_location_y = DEFAULT_LOCATION_Y;
-	image->default_zoom = ZOOM;
-
+	image->default_location_y = DEFAULT_LOCATION_Y;
+	image->default_zoom = ft_determ_zoom(image, window);
+	image->add_to_color_r = 0;
+	image->add_to_color_g = 0;
+	image->add_to_color_b = 0;
 	image->current_angle_x = image->default_angle_x;
 	image->current_angle_z = image->default_angle_y;
 	image->current_angle_z = image->default_angle_z;
@@ -197,70 +219,35 @@ void	ft_set_img_setting(t_image *image)
 	image->min_x = 0;
 	image->max_y = 0;
 	image->min_y = 0;
-}
-
-void	ft_use_img_setting(t_image *image, t_pixel_info **pixels_arr, t_window *window)
-{
-	int i;
-
-	i = 0;
-	image->max_x = 0;
-	image->min_x = 0;
-	image->max_y = 0;
-	image->min_y = 0;
-	ft_determ_min_max_x_y(image, window, pixels_arr);
-	while (i < window->pixels_width * window->pixels_hight)
-	{
-		pixels_arr[i]->current_x = pixels_arr[i]->default_x * image->current_zoom;
-		pixels_arr[i]->current_y = pixels_arr[i]->default_y * image->current_zoom;
-		pixels_arr[i]->current_z = pixels_arr[i]->default_z * image->current_zoom/2;
-		pixels_arr[i]->current_x -= window->pixels_width * image->current_zoom /2;
-		pixels_arr[i]->current_y -= window->pixels_hight * image->current_zoom /2;
-
-			pixels_arr[i]->current_color_r = pixels_arr[i]->default_color_r;
-		pixels_arr[i]->current_color_g = pixels_arr[i]->default_color_g;
-		pixels_arr[i]->current_color_b = pixels_arr[i]->default_color_b;
-//		if (image->max_x < pixels_arr[i]->current_x)
-//			image->max_x = pixels_arr[i]->current_x;
-//		if (image->min_x > pixels_arr[i]->current_x)
-//			image->min_x = pixels_arr[i]->current_x;
-//		if (image->max_y < pixels_arr[i]->current_y)
-//			image->max_y = pixels_arr[i]->current_y;
-//		if (image->min_y > pixels_arr[i]->current_y)
-//			image->min_y = pixels_arr[i]->current_y;
-		ft_x_rotation(pixels_arr[i], image, window, pixels_arr);
-		ft_y_rotation(pixels_arr[i], image, window, pixels_arr);
-		i++;
-	}
-
-
-
+	image->width = window->width * 3;
+	image->high = window->high * 3;
 }
 
 
-void	ft_fdf(t_window *window, t_pixel_info **pixels_arr, char *name)
+
+
+void	ft_fdf(t_allstruct *all, char *name)
 {
-	t_image			*image;
-	t_allstruct		*allstruct;
+	t_image		*image;
 
+	all->image = image;
+	all->window->high = WINDOW_HIGH;
+	all->window->width = WINDOW_WIDTH;
+	all->image = (t_image*)malloc(sizeof(*image));
+	all->window->mlx = mlx_init();
+	all->window->win = mlx_new_window(all->window->mlx,
+	all->window->width, all->window->high, name);
+	ft_set_img_setting(all->image, all->window);
+	all->image->img = mlx_new_image(all->window->mlx, all->image->width, all->image->high);
+	ft_use_img_setting(all->image, all->pixels_arr, all->window);
 
-	window->high = WINDOW_HIGH;
-	window->width = WINDOW_WIDTH;
-	allstruct = (t_allstruct*)malloc(sizeof(*allstruct));
-	image = (t_image*)malloc(sizeof(*image));
-	allstruct->window = window;
-	allstruct->image = image;
-	allstruct->pixels_arr = pixels_arr;
-	window->mlx = mlx_init();
-	window->win = mlx_new_window(window->mlx, window->width, window->high, name);
-	image->img = mlx_new_image(window->mlx, window->width, window->high);
-	ft_set_img_setting(image);
-	ft_use_img_setting(image, pixels_arr, window);
-	ft_draw_image(window, image, pixels_arr);
-	mlx_put_image_to_window(window->mlx, window->win, image->img, DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y);
-	mlx_hook(window->win, 2, 5, ft_my_key_func, allstruct);
-	mlx_mouse_hook(window->win, ft_my_mouse_func, allstruct);
-	mlx_loop(window->mlx);
+	ft_draw_image(all->window, all->image, all->pixels_arr);
+
+	mlx_put_image_to_window(all->window->mlx, all->window->win,
+	all->image->img, DEFAULT_LOCATION_X, DEFAULT_LOCATION_Y);
+	mlx_hook(all->window->win, 2, 5, ft_my_key_func, all);
+	mlx_mouse_hook(all->window->win, ft_my_mouse_func, all);
+	mlx_loop(all->window->mlx);
 }
 
 int		main(int argc, char **argv)
@@ -268,7 +255,7 @@ int		main(int argc, char **argv)
 	char			*line;
 	int				fd;
 	t_allstruct		*allstruct;
-	char 			**pixels_line_array;
+	char			**pixels_line_array;
 
 	if (argc != 2)
 		ft_error_number_of_params();
@@ -283,10 +270,10 @@ int		main(int argc, char **argv)
 	get_next_line(fd, &line);
 	pixels_line_array = ft_pixels_line_to_array(line, allstruct->window);
 	allstruct->window->pixels_width = ft_count_pixel_width(pixels_line_array);
-	allstruct->pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*) *  allstruct->window->pixels_hight * allstruct->window->pixels_width);
-
+	allstruct->pixels_arr = (t_pixel_info**)malloc(sizeof(t_pixel_info*)
+	* allstruct->window->pixels_hight * allstruct->window->pixels_width);
 	ft_read_and_fill_pixel_arr(allstruct, pixels_line_array, fd);
-	ft_fdf(allstruct->window, allstruct->pixels_arr, argv[1]);
+	ft_fdf(allstruct, argv[1]);
 	close(fd);
 	return (0);
 }
